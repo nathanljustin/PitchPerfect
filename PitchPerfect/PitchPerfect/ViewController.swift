@@ -16,7 +16,6 @@ class ViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDe
     
     @IBOutlet weak var stopButton: UIButton!
     @IBOutlet weak var recordButton: UIButton!
-    var audioPlayer: AVAudioPlayer?
     var audioRecorder: AVAudioRecorder?
 
     override func viewDidLoad() {
@@ -68,25 +67,16 @@ class ViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDe
         
         if audioRecorder?.isRecording == true {
             audioRecorder?.stop()
-            playAudio(sender)
+            shouldPerformSegue(withIdentifier: "stopRecording", sender: sender)
+        }
+    }
+ 
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if(segue.identifier == "stopRecording"){
+            let pitchVC: PitchViewController = segue.destination as! PitchViewController
+            pitchVC.receivedAudio = (audioRecorder?.url)!
         }
     }
     
-    public func playAudio(_ sender: UIButton) {
-        if audioRecorder?.isRecording == false {
-            stopButton.isEnabled = true
-            recordButton.isEnabled = false
-            
-            do {
-                try audioPlayer = AVAudioPlayer(contentsOf:
-                    (audioRecorder?.url)!)
-                audioPlayer!.delegate = self
-                audioPlayer!.prepareToPlay()
-                audioPlayer!.play()
-            } catch let error as NSError {
-                print("audioPlayer error: \(error.localizedDescription)")
-            }
-        }
-    }
 }
 
